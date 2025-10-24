@@ -4,12 +4,12 @@ using PianoBuddy.Services;
 
 namespace PianoBuddy.Tests
 {
-    public class MidiNoteHandlerTests
+    public class MidiNoteMapperTests
     {
         [Fact]
-        public void TestMapMidiNoteToString()
+        public void TestMapMidiEventToNoteString()
         {
-            var handler = new MidiNoteHandler();
+            var handler = new MidiNoteMapper();
             var noteEvent = new NoteOnEvent(0, 1, 60, 100, 0);
             var result = handler.GetNoteString(noteEvent);
 

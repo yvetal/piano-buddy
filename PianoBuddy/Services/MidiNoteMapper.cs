@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PianoBuddy.Services
 {
-    public class MidiNoteHandler
+    public class MidiNoteMapper
     {
         public string GetNoteString(NoteEvent noteEvent)
         {
