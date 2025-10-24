@@ -1,0 +1,8 @@
+# Ignore Visual Studio cache and settings
+.vs/
+*.user
+*.suo
+*.dbmdl
+*.vscode/
+bin/
+obj/
