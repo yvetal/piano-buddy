@@ -1,0 +1,23 @@
+﻿using NAudio.Midi;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PianoBuddy.Services
+{
+    public class MidiInMessageHandler
+    {
+        public event Action<string> NoteReceived;
+
+        public void HandleMessage(MidiEvent midiEvent)
+        {
+            if (midiEvent is NoteOnEvent noteOn && noteOn.Velocity > 0)
+            {
+                string noteString = $"Note: {noteOn.NoteName} ({noteOn.NoteNumber})";
+                NoteReceived?.Invoke(noteString);
+            }
+        }
+    }
+}
