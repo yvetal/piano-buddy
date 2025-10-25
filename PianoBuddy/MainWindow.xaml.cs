@@ -22,7 +22,7 @@ namespace PianoBuddy
             var provider = new MidiDeviceProvider();
             _deviceFinder = new MidiDeviceFinder(provider);
 
-            NoteLabel.Content = _deviceFinder.FindDevices();
+            DevicesTextBlock.Text = _deviceFinder.FindDevices();
             
             // Start first MIDI device
             _midiService = new MidiService(i => new MidiInWrapper(i)); // Wrap NAudio MidiIn
@@ -33,7 +33,7 @@ namespace PianoBuddy
         {
             Dispatcher.Invoke(() =>
             {
-                NoteLabel.Content = $"Note: {note.NoteName} ({note.NoteNumber})";
+                NoteTextBlock.Text = $"Note: {note.NoteName} ({note.NoteNumber})";
             });
         }
     }
