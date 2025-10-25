@@ -1,24 +1,40 @@
-﻿using System.Text;
+﻿using System;
+using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using NAudio.Midi;
+using PianoBuddy.Services; 
 
 namespace PianoBuddy
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private MidiDeviceFinder _deviceFinder;
+        private MidiService _midiService;
+
         public MainWindow()
         {
             InitializeComponent();
+            DetectMidiDevices();
+        }
+
+        private void DetectMidiDevices()
+        {
+            var provider = new MidiDeviceProvider();
+            _deviceFinder = new MidiDeviceFinder(provider);
+
+            NoteLabel.Content = _deviceFinder.FindDevices();
+            
+            // Start first MIDI device
+            _midiService = new MidiService(i => new MidiInWrapper(i)); // Wrap NAudio MidiIn
+            _midiService.NoteReceived += OnNoteReceived;
+            _midiService.Start(0);
+        }
+        private void OnNoteReceived(object sender, NoteEvent note)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                NoteLabel.Content = $"Note: {note.NoteName} ({note.NoteNumber})";
+            });
         }
     }
 }
