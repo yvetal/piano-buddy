@@ -15,9 +15,13 @@ namespace PianoBuddy.Services
         {
             if (midiEvent is NoteOnEvent noteOn && noteOn.Velocity > 0)
             {
-                string noteString = $"Note: {noteOn.NoteName} ({noteOn.NoteNumber})";
+                string noteString = GetNoteString(noteOn);
                 NoteReceived?.Invoke(noteString);
             }
+        }
+        private string GetNoteString(NoteOnEvent noteEvent)
+        {
+            return $"Note: {noteEvent.NoteName} ({noteEvent.NoteNumber})";
         }
     }
 }
