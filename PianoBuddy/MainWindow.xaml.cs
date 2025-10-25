@@ -15,6 +15,7 @@ namespace PianoBuddy
         {
             InitializeComponent();
             DetectMidiDevices();
+            StartFirstMidiDevice();
         }
 
         private void DetectMidiDevices()
@@ -23,12 +24,15 @@ namespace PianoBuddy
             _deviceFinder = new MidiDeviceFinder(provider);
 
             DevicesTextBlock.Text = _deviceFinder.FindDevices();
-            
-            // Start first MIDI device
+        }
+
+        private void StartFirstMidiDevice()
+        {
             _midiService = new MidiService(i => new MidiInWrapper(i)); // Wrap NAudio MidiIn
             _midiService.NoteReceived += OnNoteReceived;
             _midiService.Start(0);
         }
+
         private void OnNoteReceived(object sender, NoteEvent note)
         {
             Dispatcher.Invoke(() =>

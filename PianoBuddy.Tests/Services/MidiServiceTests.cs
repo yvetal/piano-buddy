@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PianoBuddy.Tests
+namespace PianoBuddy.Tests.Services
 {
     public class FakeMidiIn : IMidiIn
     {
@@ -28,59 +28,67 @@ namespace PianoBuddy.Tests
             MessageReceived?.Invoke(this, e);
         }
     }
-    public class MidiServiceTests
+    public class MidiServiceFixture : IDisposable
     {
+        public FakeMidiIn FakeDevice { get; }
+        public MidiService Service { get; }
 
+        public MidiServiceFixture()
+        {
+            FakeDevice = new FakeMidiIn(0);
+            Service = new MidiService(index => FakeDevice);
+            Service.Start(0);
+        }
+
+        public void Dispose()
+        {
+            Service.Stop();
+        }
+    }
+
+    public class MidiServiceTests : IClassFixture<MidiServiceFixture>
+    {
+        private readonly MidiServiceFixture _fixture;
+        public MidiServiceTests(MidiServiceFixture fixture)
+        {
+            _fixture = fixture;
+        }
         [Fact]
         public void TestStart()
         {
-            var fakeDevice = new FakeMidiIn(0);
-            var service = new MidiService(index => fakeDevice);
-            
-            service.Start(0);
-
-            Assert.True(fakeDevice.Started);
-            Assert.Equal(0, fakeDevice.Index);
-
+            Assert.True(_fixture.FakeDevice.Started);
+            Assert.Equal(0, _fixture.FakeDevice.Index);
         }
         [Fact]
         public void NoteReceived_EventIsRaised_WhenMidiMessageArrives()
         {
-            var fakeDevice = new FakeMidiIn(0);
-            var service = new MidiService(index => fakeDevice);
-            
             NoteEvent receivedNote = null;
-            service.NoteReceived += (s, e) => receivedNote = e;
-
-            service.Start(0);
+            _fixture.Service.NoteReceived += (s, e) => receivedNote = e;
 
             var noteOn = new NoteOnEvent(0, 1, 64, 127, 0);
-            int raw = noteOn.GetAsShortMessage();
-            var message = new MidiInMessageEventArgs(raw, 0);
+            var message = new MidiInMessageEventArgs(noteOn.GetAsShortMessage(), 0);
 
-            fakeDevice.SimulateMessage(message);
+            _fixture.FakeDevice.SimulateMessage(message);
 
             Assert.NotNull(receivedNote);
+            CompareNotes(receivedNote, noteOn);
+        }
 
+        private static void CompareNotes(NoteEvent receivedNote, NoteOnEvent noteOn)
+        {
             Assert.Equal(noteOn.NoteNumber, receivedNote.NoteNumber);
             Assert.Equal(noteOn.Velocity, receivedNote.Velocity);
             Assert.Equal(noteOn.Channel, receivedNote.Channel);
             Assert.Equal(noteOn.CommandCode, receivedNote.CommandCode);
         }
+
         [Fact]
         public void Stop_ShouldStopAndDisposeMidiDevice()
         {
-            // Arrange
-            var fakeDevice = new FakeMidiIn(0);
-            var service = new MidiService(i => fakeDevice);
-            service.Start(0);
+            _fixture.Service.Stop();
 
-            // Act
-            service.Stop();
-
-            // Assert
-            Assert.False(fakeDevice.Started);    // Stop() sets Started to false
-            Assert.True(fakeDevice.Disposed);    // Dispose() should have been called
+            Assert.False(_fixture.FakeDevice.Started);
+            Assert.True(_fixture.FakeDevice.Disposed);
         }
     }
 }

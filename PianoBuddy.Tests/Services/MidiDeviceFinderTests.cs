@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PianoBuddy.Tests
+namespace PianoBuddy.Tests.Services
 {
     public class MidiDeviceFinderTests
     {
