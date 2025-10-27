@@ -14,20 +14,21 @@
         <!-- MIDI Devices -->
         <GroupBox Header="MIDI Devices" Grid.Row="0" Margin="0,0,0,10">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <TextBlock x:Name="DevicesTextBlock"
-                           FontSize="14"
-                           TextWrapping="Wrap" />
+                <TextBlock
+                    FontSize="14"
+                    TextWrapping="Wrap"
+                    Text="{Binding Devices}" />
             </ScrollViewer>
         </GroupBox>
 
         <!-- Current Note -->
         <GroupBox Header="Current Note" Grid.Row="1">
-            <TextBlock x:Name="NoteTextBlock"
-                       FontSize="24"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       FontWeight="Bold"
-                       Text="No note played yet" />
+            <TextBlock
+                FontSize="24"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontWeight="Bold"
+                Text="{Binding CurrentNote, FallbackValue='No note played yet'}" />
         </GroupBox>
     </Grid>
 </Window>
